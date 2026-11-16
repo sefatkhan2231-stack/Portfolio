@@ -150,7 +150,7 @@ If an image works locally but not on Vercel, check that the file is committed to
 
 - Email: [sefatkhan2231@gmail.com](mailto:sefatkhan2231@gmail.com)
 - LinkedIn: [sefat-khan](https://www.linkedin.com/in/sefat-khan-44296b2b8)
-- GitHub: [Sefat-Khan](https://github.com/Sefat-Khan)
+- GitHub: [Sefat-Khan]([https://github.com/Sefat-Khan](https://github.com/sefatkhan2231-stack))
 
 ## License
 
