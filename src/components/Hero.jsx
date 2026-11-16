@@ -133,7 +133,7 @@ export default function Hero() {
             </a>
 
             <a
-              href="/assets/sefat_khan.pdf" // 🔁 replace with your actual CV path
+              href="/assets/Sefat_Khan_Data_Science_ML_Resume.pdf" // 🔁 replace with your actual CV path
               target="_blank"
               rel="noopener noreferrer"
               className="group relative flex items-center gap-2 rounded-full border border-slate-700 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-white overflow-hidden transition-all hover:border-blue-500"
@@ -145,14 +145,14 @@ export default function Hero() {
 
             <div className="flex items-center gap-3 sm:gap-4">
               <a
-                href="https://github.com/Sefat-Khan"
+                href="https://github.com/sefatkhan2231-stack"
                 aria-label="GitHub"
                 className="p-2.5 sm:p-3 rounded-full border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-all"
               >
                 <Github className="w-5 h-5 sm:w-6 sm:h-6" />
               </a>
               <a
-                href="https://www.linkedin.com/in/sefat-khan-44296b2b8"
+                href="https://www.linkedin.com/in/md-sefat-khan-294a173a0"
                 aria-label="LinkedIn"
                 className="p-2.5 sm:p-3 rounded-full border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-all"
               >
