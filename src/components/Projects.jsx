@@ -4,7 +4,7 @@ import { ExternalLink, Github } from "lucide-react"; // Optional: npm i lucide-r
 const projectData = [
   {
     title: "CineMatch",
-    image: "/assets/cinematch-home.png",
+    image: "/cinematch-home.png",
     desc: "CineMatch is a full-stack movie recommendation platform that helps users discover movies through personalized recommendations, similar-movie suggestions, and movie search.",
     tags: ["React", "FastAPI", "PostgreSQL", "Machine Learning"],
     link: "https://cine-match-henna.vercel.app",
@@ -12,7 +12,7 @@ const projectData = [
   },
   {
     title: "sql-analytics-dashboard",
-    image: "/assets/product-&-regional-analysis.png",
+    image: "/product-&-regional-analysis.png",
     desc: "This project analyzes historical Superstore sales data from January 2014 to December 2017. The goal is to transform transactional data into actionable business insights through SQL analysis and a five-page interactive Power BI report.The analysis covers overall business performance, customer segmentation (RFM), cohort retention, product profitability, discount-related losses, and regional performance.",
     tags: ["PostgreSQL", "SQL", "Power BI"],
     github:
@@ -20,7 +20,7 @@ const projectData = [
   },
   {
     title: "AI Resume Rag",
-    image: "/assets/ai-resume-home.png",
+    image: "/ai-resume-home.png",
     desc: "A RAG based AI Resume screening application which can process, store and fetch information from multiple PDF Resumes.",
     tags: [
       "Generative AI",
@@ -35,7 +35,7 @@ const projectData = [
   },
   {
     title: "BariDam",
-    image: "/assets/home.png",
+    image: "/home.png",
     desc: "An end-to-end machine learning web application that predicts real estate sale prices in Bangladesh using an XGBoost regression model. The project includes a FastAPI backend for serving predictions and model insights, and a React (Vite + TypeScript) frontend for interacting with the model — including single predictions, CSV batch predictions, and model explainability (SHAP) visualizations.",
     tags: ["React", "Tailwind", "FastAPI", "XGBoost", "Pandas"],
     link: "https://bangladesh-real-estate-price-predic.vercel.app",
@@ -44,7 +44,7 @@ const projectData = [
   },
   {
     title: "Credit Card Fraud",
-    image: "/assets/dashboard.png",
+    image: "/dashboard.png",
     desc: "An end-to-end Machine Learning project that detects fraudulent credit card transactions using a Random Forest Classifier trained on an imbalanced dataset. The project includes data preprocessing, SMOTE oversampling, model evaluation, feature importance analysis, and an interactive Streamlit dashboard for real-time predictions.",
     tags: ["Python", "Pandas", "NumPy", "Matplotlib", "Seaborn", "Streamlit"],
     link: "https://credit-card-fraud-jrvqt2glbkq6oj25dkuuqt.streamlit.app",
@@ -52,7 +52,7 @@ const projectData = [
   },
   {
     title: "customer-churn-platform",
-    image: "/assets/churn-home.png",
+    image: "/churn-home.png",
     desc: "An end-to-end Machine Learning web application that predicts customer churn using customer demographic and service information.",
     tags: [
       "Python",
