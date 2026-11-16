@@ -14,31 +14,31 @@ export default function Skills() {
   return (
     <section
       id="skills"
-      className="relative w-full px-6 py-32 lg:px-20 bg-transparent"
+      className="relative w-full px-4 py-16 sm:px-6 sm:py-24 lg:px-20 lg:py-32 bg-transparent"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-16">
-          <h3 className="text-sm font-black uppercase tracking-[0.3em] text-blue-500 mb-2">
+        <div className="mb-10 sm:mb-16">
+          <h3 className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-blue-500 mb-2">
             Expertise
           </h3>
-          <h2 className="text-4xl md:text-5xl font-bold text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
             Technical <span className="text-slate-500">Skills</span>
           </h2>
         </div>
 
         {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {skills.map(({ name, val, color }) => (
             <motion.div
               key={name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="group relative rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-slate-700 hover:bg-slate-900"
+              className="group relative rounded-2xl border border-slate-800 bg-slate-900/50 p-5 sm:p-6 transition-all hover:border-slate-700 hover:bg-slate-900"
             >
               <div className="flex justify-between items-end mb-4">
-                <span className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                <span className="text-lg sm:text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
                   {name}
                 </span>
                 <span className="text-sm font-mono text-slate-500">{val}%</span>

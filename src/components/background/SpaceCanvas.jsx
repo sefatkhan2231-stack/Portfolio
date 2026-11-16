@@ -34,21 +34,31 @@ export default function UnifiedSpaceCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
+    let cancelled = false;
     let stars = [];
     let planets = [];
     let shootingStars = [];
     const loadedImages = {};
-
-    const isMobile =
-      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-      window.innerWidth < 768;
 
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
     const starColors = ["#ffffff", "#ffe9c4", "#d4fbff", "#ffd5d5", "#fff4bd"];
     const shootingStarColors = ["#00f2ff", "#ff00ea", "#ffffff", "#ffd700"];
 
-    /* ------------ helpers ------------ */
+    /* ------------ responsive helpers ------------ */
+
+    // Evaluated live so rotating / resizing a device updates behaviour
+    const isMobile = () =>
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      wRef.current < 768;
+
+    // Planets scale smoothly with the viewport width (0.6x phone -> 1x desktop)
+    const planetScale = () =>
+      Math.min(1, Math.max(0.6, wRef.current / 1280));
+
+    // Star density follows screen area instead of a fixed count
+    const starCountFor = (w, h) =>
+      Math.round(Math.min(900, Math.max(150, (w * h) / 2200)));
 
     const resizeCanvas = () => {
       const w = window.innerWidth;
@@ -66,48 +76,65 @@ export default function UnifiedSpaceCanvas() {
     };
 
     const randomPos = (r) => ({
-      x: Math.random() * (wRef.current - r * 4) + r * 2,
-      y: Math.random() * (hRef.current - r * 4) + r * 2,
+      x: Math.random() * Math.max(1, wRef.current - r * 4) + r * 2,
+      y: Math.random() * Math.max(1, hRef.current - r * 4) + r * 2,
     });
 
     const loadImages = () =>
       Promise.all(
-        Object.entries(planetAssets).map(([name, src]) => {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.src = src;
-            img.onload = () => {
-              loadedImages[name] = img;
-              resolve();
-            };
-          });
-        }),
+        Object.entries(planetAssets).map(
+          ([name, src]) =>
+            new Promise((resolve) => {
+              const img = new Image();
+              img.onload = () => {
+                loadedImages[name] = img;
+                resolve();
+              };
+              // A missing image must not block the whole canvas
+              img.onerror = resolve;
+              img.src = src;
+            }),
+        ),
       );
 
-    const createShootingStar = () => ({
-      x: Math.random() * wRef.current,
-      y: Math.random() * (hRef.current * 0.5),
-      len: Math.random() * 100 + 80,
-      size: Math.random() * 2 + 1,
-      speed: Math.random() * 14 + 10,
-      color:
-        shootingStarColors[
-          Math.floor(Math.random() * shootingStarColors.length)
-        ],
-      opacity: 1,
-    });
+    const createShootingStar = () => {
+      const scale = Math.min(1, wRef.current / 1280);
+      return {
+        x: Math.random() * wRef.current,
+        y: Math.random() * (hRef.current * 0.5),
+        len: (Math.random() * 100 + 80) * Math.max(0.6, scale),
+        size: Math.random() * 2 + 1,
+        speed: Math.random() * 14 + 10,
+        color:
+          shootingStarColors[
+            Math.floor(Math.random() * shootingStarColors.length)
+          ],
+        opacity: 1,
+      };
+    };
 
-    /* ------------ init ------------ */
+    const planetGlow = (name) =>
+      ({
+        Earth: "#2b82c9",
+        Mars: "#ff4d4d",
+        Jupiter: "#e3bb76",
+        Saturn: "#f4e4bc",
+        Uranus: "#b2ffff",
+      })[name] || "#4b70dd";
+
+    /* ------------ init (runs once) ------------ */
 
     const init = async () => {
       resizeCanvas();
       await loadImages();
+      if (cancelled) return;
 
-      const starCount = isMobile ? 300 : 900;
+      const w = wRef.current;
+      const h = hRef.current;
 
-      stars = Array.from({ length: starCount }, () => ({
-        x: Math.random() * wRef.current,
-        y: Math.random() * hRef.current,
+      stars = Array.from({ length: starCountFor(w, h) }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
         r: Math.random() * 1.3 + 0.3,
         color: starColors[Math.floor(Math.random() * starColors.length)],
         speed: Math.random() * 0.03 + 0.01,
@@ -116,39 +143,57 @@ export default function UnifiedSpaceCanvas() {
         twinkle: Math.random() * 0.01 + 0.003,
       }));
 
-      const planetScale = isMobile ? 0.65 : 1;
+      const scale = planetScale();
 
       planets = Object.keys(planetAssets).map((name) => {
-        const r = basePlanetSizes[name] * planetScale;
+        const r = basePlanetSizes[name] * scale;
         const pos = randomPos(r);
 
         return {
           name,
+          size: basePlanetSizes[name],
           r,
           baseX: pos.x,
           baseY: pos.y,
-          pMult: isMobile ? 0.08 : Math.random() * 0.25 + 0.1,
-          glow:
-            name === "Earth"
-              ? "#2b82c9"
-              : name === "Mars"
-                ? "#ff4d4d"
-                : name === "Jupiter"
-                  ? "#e3bb76"
-                  : name === "Saturn"
-                    ? "#f4e4bc"
-                    : name === "Uranus"
-                      ? "#b2ffff"
-                      : "#4b70dd",
+          pMult: isMobile() ? 0.08 : Math.random() * 0.25 + 0.1,
+          glow: planetGlow(name),
           floatSpeed: Math.random() * 0.002 + 0.001,
           floatPhase: Math.random() * Math.PI * 2,
         };
       });
     };
 
+    /* ------------ resize: keep the scene, just rescale it ------------ */
+
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const prevW = wRef.current || window.innerWidth;
+        const prevH = hRef.current || window.innerHeight;
+
+        resizeCanvas();
+
+        const sx = wRef.current / prevW;
+        const sy = hRef.current / prevH;
+        const scale = planetScale();
+
+        stars.forEach((s) => {
+          s.x *= sx;
+          s.y *= sy;
+        });
+        planets.forEach((p) => {
+          p.baseX *= sx;
+          p.baseY *= sy;
+          p.r = p.size * scale;
+        });
+      }, 150);
+    };
+
     /* ------------ draw ------------ */
 
     const draw = () => {
+      if (cancelled) return;
       ctx.clearRect(0, 0, wRef.current, hRef.current);
 
       curX.current += (mx.current - curX.current) * 0.05;
@@ -171,7 +216,7 @@ export default function UnifiedSpaceCanvas() {
         );
         ctx.fillStyle =
           s.color +
-          Math.floor(s.opacity * 255)
+          Math.floor(Math.min(1, Math.max(0, s.opacity)) * 255)
             .toString(16)
             .padStart(2, "0");
         ctx.fill();
@@ -195,14 +240,19 @@ export default function UnifiedSpaceCanvas() {
         ctx.restore();
       });
 
-      if (!isMobile && Math.random() < 0.02)
+      if (!isMobile() && Math.random() < 0.02)
         shootingStars.push(createShootingStar());
 
-      shootingStars.forEach((s, i) => {
+      // Iterate backwards so splicing never skips an entry
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const s = shootingStars[i];
         s.x += s.speed;
         s.y += s.speed * 0.5;
         s.opacity -= 0.02;
-        if (s.opacity <= 0) shootingStars.splice(i, 1);
+        if (s.opacity <= 0) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
 
         const g = ctx.createLinearGradient(
           s.x,
@@ -219,12 +269,14 @@ export default function UnifiedSpaceCanvas() {
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(s.x - s.len, s.y - s.len * 0.5);
         ctx.stroke();
-      });
+      }
 
       rafId.current = requestAnimationFrame(draw);
     };
 
-    init().then(draw);
+    init().then(() => {
+      if (!cancelled) draw();
+    });
 
     /* ------------ input ------------ */
 
@@ -241,14 +293,17 @@ export default function UnifiedSpaceCanvas() {
 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("resize", init);
+    window.addEventListener("resize", onResize);
 
     return () => {
+      cancelled = true;
+      clearTimeout(resizeTimer);
       cancelAnimationFrame(rafId.current);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("resize", init);
+      window.removeEventListener("resize", onResize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
